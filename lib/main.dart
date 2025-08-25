@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/home/home_screen.dart';
+import 'screens/os_details/os_details_screen.dart'; // Importe a nova tela
 
 void main() {
   runApp(const SysManApp());
@@ -19,11 +20,11 @@ class SysManApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
       ),
-      // Define a tela de login como a rota inicial
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
+        '/os_details': (context) => const OsDetailsScreen(), // Adicione esta linha
       },
     );
   }
