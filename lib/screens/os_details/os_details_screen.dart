@@ -31,7 +31,7 @@ class _OsDetailsScreenState extends State<OsDetailsScreen> {
 
     if (result != null && result is OrdemServico) {
       setState(() {
-        ordem = result;
+        ordem = result; // Atualiza os detalhes da OS
       });
     }
   }

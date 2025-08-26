@@ -89,27 +89,30 @@ class ApiService {
   /// NOVO MÉTODO: Atualiza o status de uma Ordem de Serviço específica.
   /// Retorna o objeto OrdemServico atualizado em caso de sucesso.
   Future<OrdemServico?> updateOrdemServico({
-    required String osNumero,
+    required OrdemServico ordemToUpdate,
     required String newStatus,
     required String newProblemDescription,
   }) async {
     final accessToken = await _secureStorage.readToken('access');
     if (accessToken == null) return null;
 
-    final url = Uri.parse('$_baseUrl/api/ordens/$osNumero/');
+    final url = Uri.parse('$_baseUrl/api/ordens/${ordemToUpdate.numero}/atualizar/');
 
     try {
+      // CORREÇÃO: Cria um mapa de dados usando o novo método toJsonForUpdate
+      final Map<String, dynamic> dataToUpdate = ordemToUpdate.toJsonForUpdate(
+        newStatus: newStatus,
+        newProblemDescription: newProblemDescription,
+      );
+
       final response = await http.patch(
         url,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
-        // CORREÇÃO: Enviando os dados com as chaves corretas que a API espera
-        body: json.encode({
-          'status': newStatus,
-          'descricao_problema': newProblemDescription,
-        }),
+        // Envia os dados já formatados pelo método toJsonForUpdate
+        body: json.encode(dataToUpdate),
       );
 
       if (response.statusCode == 200) {

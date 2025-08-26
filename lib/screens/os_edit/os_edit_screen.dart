@@ -15,10 +15,9 @@ class _OsEditScreenState extends State<OsEditScreen> {
   late OrdemServico _ordem;
 
   late TextEditingController _descricaoProblemaController;
-  late String _selectedStatus;
+  late String _selectedStatus ='';
   bool _isLoading = false;
 
-  // CORREÇÃO: Lista de status agora corresponde EXATAMENTE ao seu models.py
   final List<String> _statusOptions = [
     'ABERTA',
     'EM_EXECUCAO',
@@ -31,8 +30,13 @@ class _OsEditScreenState extends State<OsEditScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _ordem = ModalRoute.of(context)!.settings.arguments as OrdemServico;
-    _descricaoProblemaController = TextEditingController(text: _ordem.descricaoProblema);
-    _selectedStatus = _ordem.status.toUpperCase().replaceAll(' ', '_');
+
+    // Inicialize apenas se _selectedStatus ainda não foi definido
+    if (_selectedStatus.isEmpty) {
+      _descricaoProblemaController = TextEditingController(text: _ordem.descricaoProblema);
+      _selectedStatus = _ordem.status.toUpperCase().replaceAll(' ', '_');
+      print('Status inicial: $_selectedStatus'); // Verifique o valor inicial
+    }
   }
 
   @override
@@ -43,22 +47,35 @@ class _OsEditScreenState extends State<OsEditScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      setState(() { _isLoading = true; });
+      setState(() {
+        _isLoading = true;
+      });
+
+      print('Status selecionado antes do envio: $_selectedStatus');
 
       final updatedOrdem = await _apiService.updateOrdemServico(
-        osNumero: _ordem.numero,
+        ordemToUpdate: _ordem,
         newStatus: _selectedStatus,
         newProblemDescription: _descricaoProblemaController.text,
       );
 
-      setState(() { _isLoading = false; });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
 
-      if (updatedOrdem != null && mounted) {
-        Navigator.of(context).pop(updatedOrdem);
-      } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Falha ao salvar as alterações.'), backgroundColor: Colors.red),
-        );
+        if (updatedOrdem != null) {
+          Navigator.of(context).pop(updatedOrdem);
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Falha ao salvar as alterações.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
       }
     }
   }
@@ -81,7 +98,10 @@ class _OsEditScreenState extends State<OsEditScreen> {
                   return DropdownMenuItem<String>(value: status, child: Text(status.replaceAll('_', ' ')));
                 }).toList(),
                 onChanged: (newValue) {
-                  setState(() { _selectedStatus = newValue!; });
+                  setState(() {
+                    _selectedStatus = newValue!;
+                    print('Status atualizado: $_selectedStatus'); // Verifique o valor atualizado
+                  });
                 },
               ),
               const SizedBox(height: 24),

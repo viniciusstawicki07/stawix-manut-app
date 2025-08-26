@@ -120,13 +120,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 6.0),
                   child: InkWell(
-                    onTap: () {
-                      // NAVEGAÇÃO PARA A TELA DE DETALHES
-                      Navigator.pushNamed(
+                    onTap: () async {
+                      final result = await Navigator.pushNamed(
                         context,
                         '/os_details',
                         arguments: ordem,
                       );
+
+                      if (result != null && result is OrdemServico) {
+                        setState(() {
+                          // Atualiza a lista de ordens com a OS retornada
+                          final index = ordens.indexWhere((os) => os.numero == result.numero);
+                          if (index != -1) {
+                            ordens[index] = result;
+                          }
+                        });
+                      }
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
