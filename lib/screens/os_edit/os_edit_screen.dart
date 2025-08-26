@@ -31,9 +31,7 @@ class _OsEditScreenState extends State<OsEditScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _ordem = ModalRoute.of(context)!.settings.arguments as OrdemServico;
-    // O controlador agora edita a 'descricaoProblema'
     _descricaoProblemaController = TextEditingController(text: _ordem.descricaoProblema);
-    // Converte o status da OS (ex: "Em Execução") para o formato interno da chave (ex: "EM_EXECUCAO")
     _selectedStatus = _ordem.status.toUpperCase().replaceAll(' ', '_');
   }
 
@@ -50,7 +48,6 @@ class _OsEditScreenState extends State<OsEditScreen> {
       final updatedOrdem = await _apiService.updateOrdemServico(
         osNumero: _ordem.numero,
         newStatus: _selectedStatus,
-        // Enviando a descrição do problema atualizada
         newProblemDescription: _descricaoProblemaController.text,
       );
 
@@ -89,7 +86,6 @@ class _OsEditScreenState extends State<OsEditScreen> {
               ),
               const SizedBox(height: 24),
               TextFormField(
-                // Controlador e label ajustados para 'Descrição do Problema'
                 controller: _descricaoProblemaController,
                 decoration: const InputDecoration(
                   labelText: 'Descrição do Problema',

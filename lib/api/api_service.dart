@@ -105,7 +105,7 @@ class ApiService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
-        // CORREÇÃO: Mapeando os dados corretos para os campos corretos da API
+        // CORREÇÃO: Enviando os dados com as chaves corretas que a API espera
         body: json.encode({
           'status': newStatus,
           'descricao_problema': newProblemDescription,
