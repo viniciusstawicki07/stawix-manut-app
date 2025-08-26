@@ -86,4 +86,43 @@ class ApiService {
       return [];
     }
   }
+  /// NOVO MÉTODO: Atualiza o status de uma Ordem de Serviço específica.
+  /// Retorna o objeto OrdemServico atualizado em caso de sucesso.
+  Future<OrdemServico?> updateOrdemServico({
+    required String osNumero,
+    required String newStatus,
+    required String newProblemDescription,
+  }) async {
+    final accessToken = await _secureStorage.readToken('access');
+    if (accessToken == null) return null;
+
+    final url = Uri.parse('$_baseUrl/api/ordens/$osNumero/');
+
+    try {
+      final response = await http.patch(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        // CORREÇÃO: Mapeando os dados corretos para os campos corretos da API
+        body: json.encode({
+          'status': newStatus,
+          'descricao_problema': newProblemDescription,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(utf8.decode(response.bodyBytes));
+        return OrdemServico.fromJson(responseBody);
+      } else {
+        print('Erro ao atualizar a OS - Status: ${response.statusCode}');
+        print('Corpo da resposta: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Uma exceção ocorreu ao atualizar a OS: $e');
+      return null;
+    }
+  }
 }

@@ -36,6 +36,7 @@ class OrdemServico {
       dataConclusao: json['data_conclusao'] != null
           ? DateTime.parse(json['data_conclusao'])
           : null,
+      // CORREÇÃO: Lendo os campos corretos da API
       descricaoProblema: json['descricao_problema'] ?? 'Sem descrição',
       ativo: Ativo.fromJson(json['ativo'] is Map<String, dynamic> ? json['ativo'] : {}),
       tecnico: Tecnico.fromJson(json['tecnico_responsavel'] is Map<String, dynamic> ? json['tecnico_responsavel'] : {}),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manutencao_bj_app/screens/os_edit/os_edit_screen.dart';
 import 'screens/login/login_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/os_details/os_details_screen.dart'; // Importe a nova tela
@@ -24,7 +25,8 @@ class SysManApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
-        '/os_details': (context) => const OsDetailsScreen(), // Adicione esta linha
+        '/os_details': (context) => const OsDetailsScreen(),
+        '/os_edit': (context) => const OsEditScreen(),// Adicione esta linha
       },
     );
   }

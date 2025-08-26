@@ -2,10 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/ordem_servico.dart';
 
-class OsDetailsScreen extends StatelessWidget {
+class OsDetailsScreen extends StatefulWidget {
   const OsDetailsScreen({super.key});
 
-  // Função auxiliar para criar uma linha de informação com ícone
+  @override
+  State<OsDetailsScreen> createState() => _OsDetailsScreenState();
+}
+
+class _OsDetailsScreenState extends State<OsDetailsScreen> {
+  late OrdemServico ordem;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Pega a OS enviada da tela de lista
+    ordem = ModalRoute.of(context)!.settings.arguments as OrdemServico;
+  }
+
+  /// Navega para a tela de edição e aguarda um resultado.
+  /// Se a edição for salva, a tela de edição retornará a OS atualizada,
+  /// e nós atualizamos o estado desta tela para refletir as mudanças.
+  Future<void> _navigateToEditScreen() async {
+    final result = await Navigator.pushNamed(
+      context,
+      '/os_edit',
+      arguments: ordem,
+    );
+
+    if (result != null && result is OrdemServico) {
+      setState(() {
+        ordem = result;
+      });
+    }
+  }
+
+  // Funções auxiliares para construir a UI
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -26,7 +57,6 @@ class OsDetailsScreen extends StatelessWidget {
     );
   }
 
-  // Função auxiliar para criar um card de informação
   Widget _buildInfoCard({required String title, required List<Widget> children}) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -50,9 +80,6 @@ class OsDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Recebe o objeto OrdemServico passado como argumento da tela anterior
-    final ordem = ModalRoute.of(context)!.settings.arguments as OrdemServico;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalhes da OS: ${ordem.numero}'),
@@ -61,7 +88,6 @@ class OsDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            // Card de Status e Prioridade
             Card(
               color: Colors.blueGrey.shade50,
               child: Padding(
@@ -87,8 +113,6 @@ class OsDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Card de Informações do Ativo
             _buildInfoCard(
               title: 'Ativo',
               children: [
@@ -101,8 +125,6 @@ class OsDetailsScreen extends StatelessWidget {
                 _buildInfoRow(Icons.model_training, 'Modelo', ordem.ativo.modelo ?? 'N/D'),
               ],
             ),
-
-            // Card de Detalhes da Manutenção
             _buildInfoCard(
               title: 'Detalhes da Manutenção',
               children: [
@@ -115,8 +137,6 @@ class OsDetailsScreen extends StatelessWidget {
                 _buildInfoRow(Icons.person_outline, 'Técnico', ordem.tecnico.nome),
               ],
             ),
-
-            // Card de Descrição do Problema
             _buildInfoCard(
               title: 'Descrição do Problema',
               children: [
@@ -127,11 +147,9 @@ class OsDetailsScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Implementar lógica para iniciar/concluir a OS
-        },
-        label: const Text('Iniciar Serviço'),
-        icon: const Icon(Icons.play_arrow_rounded),
+        onPressed: _navigateToEditScreen,
+        label: const Text('Atualizar OS'),
+        icon: const Icon(Icons.edit_note_rounded),
       ),
     );
   }
